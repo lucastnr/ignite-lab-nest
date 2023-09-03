@@ -65,8 +65,8 @@ export class Notification {
     return this.data.createdAt;
   }
 
-  public get canceledAt(): NotificationData['createdAt'] {
-    return this.data.createdAt;
+  public get canceledAt(): NotificationData['canceledAt'] {
+    return this.data.canceledAt;
   }
 
   public read() {
