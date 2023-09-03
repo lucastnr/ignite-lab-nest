@@ -7,6 +7,7 @@ export interface NotificationData {
   content: Content;
   category: string;
   readAt?: Date | null;
+  canceledAt?: Date | null;
   createdAt: Date;
 }
 
@@ -19,8 +20,9 @@ export class Notification {
       NotificationData,
       { createdAt?: NotificationData['createdAt'] }
     >,
+    id?: string,
   ) {
-    this._id = randomUUID();
+    this._id = id || randomUUID();
     this.data = {
       ...data,
       createdAt: data.createdAt ?? new Date(),
@@ -59,11 +61,23 @@ export class Notification {
     return this.data.readAt;
   }
 
-  public set readAt(value: Exclude<NotificationData['readAt'], undefined>) {
-    this.data.readAt = value;
-  }
-
   public get createdAt(): NotificationData['createdAt'] {
     return this.data.createdAt;
+  }
+
+  public get canceledAt(): NotificationData['createdAt'] {
+    return this.data.createdAt;
+  }
+
+  public read() {
+    this.data.readAt = new Date();
+  }
+
+  public unread() {
+    this.data.readAt = null;
+  }
+
+  public cancel(): void {
+    this.data.canceledAt = new Date();
   }
 }
