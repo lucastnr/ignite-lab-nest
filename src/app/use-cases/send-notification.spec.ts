@@ -14,6 +14,12 @@ describe('Send Notification', () => {
     });
 
     expect(notificationsRepository.notifications).toHaveLength(1);
+    expect([null, undefined]).toContain(
+      notificationsRepository.notifications[0].canceledAt,
+    );
+    expect([null, undefined]).toContain(
+      notificationsRepository.notifications[0].readAt,
+    );
     expect(notificationsRepository.notifications[0]).toEqual(notification);
   });
 });
