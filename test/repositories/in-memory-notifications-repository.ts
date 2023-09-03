@@ -7,6 +7,10 @@ export class InMemoryNotificationsRepository
 {
   private _notifications: Notification[] = [];
 
+  async list(): Promise<Notification[]> {
+    return this.notifications;
+  }
+
   async create(notification: Notification): Promise<void> {
     this.notifications.push(notification);
   }

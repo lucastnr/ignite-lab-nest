@@ -7,6 +7,12 @@ import { PrismaService } from '../prisma.service';
 @Injectable()
 export class PrismaNotificationsRepository implements NotificationsRepository {
   constructor(private prismaService: PrismaService) {}
+
+  async list(): Promise<Notification[]> {
+    const notifications = await this.prismaService.notification.findMany();
+    return notifications.map(PrismaNotificationMapper.toDomain);
+  }
+
   async create(notification: Notification): Promise<void> {
     const data = PrismaNotificationMapper.toPrisma(notification);
     await this.prismaService.notification.create({

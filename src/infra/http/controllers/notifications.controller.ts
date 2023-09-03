@@ -1,6 +1,7 @@
 import { CancelNotification } from '@app/use-cases/cancel-notification';
 import { CountRecipientNotifications } from '@app/use-cases/count-recipient-notifications';
 import { GetRecipientNotifications } from '@app/use-cases/get-recipient-notifications';
+import { ListNotifications } from '@app/use-cases/list-notifications';
 import { ReadNotification } from '@app/use-cases/read-notification';
 import { SendNotification } from '@app/use-cases/send-notification';
 import { UnreadNotification } from '@app/use-cases/unread-notification';
@@ -11,6 +12,7 @@ import { NotificationViewModel } from './view-models/notification-view-model';
 @Controller('notifications')
 export class NotificationsController {
   constructor(
+    private listNotification: ListNotifications,
     private sendNotification: SendNotification,
     private cancelNotification: CancelNotification,
     private readNotification: ReadNotification,
@@ -18,6 +20,29 @@ export class NotificationsController {
     private countRecipientNotifications: CountRecipientNotifications,
     private getRecipientNotifications: GetRecipientNotifications,
   ) {}
+
+  @Get()
+  async list() {
+    const { notifications } = await this.listNotification.execute();
+
+    return {
+      notifications: notifications.map(NotificationViewModel.toHttp),
+    };
+  }
+
+  @Post()
+  async create(@Body() body: CreateNotificationBody) {
+    const { recipientId, category, content } = body;
+    const { notification } = await this.sendNotification.execute({
+      recipientId,
+      category,
+      content,
+    });
+
+    return {
+      notification: NotificationViewModel.toHttp(notification),
+    };
+  }
 
   @Patch(':id/cancel')
   async cancel(@Param('id') notificationId: string) {
@@ -54,19 +79,5 @@ export class NotificationsController {
   @Patch(':id/unread')
   async unread(@Param('id') notificationId: string) {
     await this.unreadNotification.execute({ notificationId });
-  }
-
-  @Post()
-  async create(@Body() body: CreateNotificationBody) {
-    const { recipientId, category, content } = body;
-    const { notification } = await this.sendNotification.execute({
-      recipientId,
-      category,
-      content,
-    });
-
-    return {
-      notification: NotificationViewModel.toHttp(notification),
-    };
   }
 }
